@@ -1,0 +1,12 @@
+<div id="home_new_note_tags">
+</div>
+<%= form_tag('/notes', :method => "post") do %>
+  <div id="home_new_note_field" class="field">
+    <%= text_area :note, :content, :rows => 5 %>
+    <br />
+  </div>
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+<% end %>
+<div calss="clear"></div>

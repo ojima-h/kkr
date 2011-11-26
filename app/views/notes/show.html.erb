@@ -1,0 +1,16 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Content:</b>
+  <%= @note.content %>
+  <% @note.tags.each do |t| %>
+    <ul>
+      <li><%= t.name %></li>
+    </ul>
+  <% end %>
+</p>
+
+<%= link_to 'Destroy', @note, :confirm => 'Are you sure?', :method => :delete %> |
+
+<%= link_to 'Edit', edit_note_path(@note) %> |
+<%= link_to 'Back', '/' %>

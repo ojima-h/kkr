@@ -1,0 +1,18 @@
+<%= form_tag @note, :method => "put"  do %>
+  <div class="field">
+    <%= label :note, :content %><br />
+    <%= text_area :note, :content %>
+    <br />
+    <table>
+      <% @tags.each do |tag| %>
+        <tr>
+          <td><%= check_box_tag "tag[]", tag.id, (@note.tags.map{|e| e.id}.include? tag.id) %></td>
+          <td><%= label_tag tag.name %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+<% end %>

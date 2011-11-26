@@ -1,0 +1,23 @@
+<h1>Listing restrictions</h1>
+
+<table>
+  <tr>
+    <th>Cond</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @restrictions.each do |restriction| %>
+  <tr>
+    <td><%= restriction.cond %></td>
+    <td><%= link_to 'Show', restriction %></td>
+    <td><%= link_to 'Edit', edit_restriction_path(restriction) %></td>
+    <td><%= link_to 'Destroy', restriction, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Restriction', new_restriction_path %>

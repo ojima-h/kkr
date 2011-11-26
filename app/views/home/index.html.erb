@@ -1,0 +1,55 @@
+<% content_for :new_note do %>
+  <%= render :partial => "new_note", :locals => {:tags => @tags} %>
+<% end %>
+
+<% content_for :note_list do %>
+  <% if @search_info %>
+    <div>
+      <%= @search_info %>
+    </div>
+  <% end %>
+  <% @notes.each do |note| %>
+    <%= div_for note, :class => "note_entry" do %>
+      <%= link_to '', note, :method => :delete,
+                  :class => "note_list_entry_delete_button" %>
+      <%= link_to '', '#', :class => "note_list_entry_link_button" %>
+      <div class="note_tags_field">
+        <% note.links.each do |link| %>
+          <%= content_tag :div, :class => "note_tags",
+                          :style => "background-color:%s" % link.tag.color do %>
+            <%= content_tag 'input', '', :type => 'hidden', :value => link.tag.to_json %>
+            <%= link_to edit_link_path(link) do %>
+              <%= link.tag.name %>
+              <% if link.value and not link.value.empty?%>
+                : <%= link.value %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+      <%= link_to edit_note_url(note), :class => "note_content" do %>
+        <%= formate note.content %>
+      <% end %>
+      <%= clear %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% content_for :tag_list do %>
+  <div class="tag_list_label">All Tags :</div>
+  <div id="tag_list_add_button" class="tag_list_entry">
+    <%= render :partial => "tag_form", :locals => {:tag => Tag.new} %>
+  </div>
+  <% @tags.each do |tag| %>
+    <%= div_for tag, :class => "tag_list_entry",
+                     :style => "background-color:%s" % tag.color do %>
+      <%= link_to_function '',
+                       "add_tag_to_home_new_note('%s', '%s', '%s')" % [tag.id, tag.name, tag.color],
+                       :class => "tag_list_entry_add_button" %>
+      <%= link_to '', tag, :method => :delete,
+                  :class => "tag_list_entry_delete_button" %>
+      <%= link_to tag.name, edit_tag_path(tag) %>
+      <div style="clear:both"></div>
+    <% end %>
+  <% end %>
+<% end %>
