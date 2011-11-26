@@ -1,0 +1,46 @@
+grammar Search
+  rule exp
+    tf:term ts:(op:('and' / 'or') ' '+ t:term {
+      def compose(note, b)
+        if op.text_value == 'and'
+          b and t.validate(note)
+        else
+          b or t.validate(note)
+        end
+      end
+    }
+    )* {
+      def validate(note)
+        ts.elements.inject(tf.validate(note)) {|acc,e|
+          e.compose(note, acc)
+        }
+      end
+    }
+  end
+
+  rule term
+    'not' ' '+ t:term {
+      def validate(note)
+        not t.validate(note)
+      end
+    }
+    / '(' exp ')' ' '* {
+      def validate(note)
+        exp.validate(note)
+      end
+    }
+    / label
+  end
+
+  rule label
+    ':' name:([^ ]+) ' '* {
+      def validate(note)
+        note.tags.any? { |tag|
+          tag.name == name.text_value
+        }
+      end
+    }
+  end
+end
+
+

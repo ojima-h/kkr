@@ -1,0 +1,13 @@
+* MODEL
+** Note
+   - tags : 紐付いている tag の配列
+** Tag
+   - self.add_link_to_note(note_id, tag_ids) : note_id に tag_id の配列を関連付ける
+** Link
+
+* CONTROLLER
+** Note
+   - @tags : 全てのタグ
+** Tag
+** Link
+* VIEW
