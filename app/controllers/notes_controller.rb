@@ -44,6 +44,8 @@ class NotesController < ApplicationController
     @note = Note.new(params[:note])
     tag_ids = params[:tag]
 
+    
+
     respond_to do |format|
       if @note.save and Link.add_link_to_note(@note, tag_ids)
         format.html { redirect_to('/', :notice => 'Note was successfully created.') }

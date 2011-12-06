@@ -3,11 +3,11 @@
     <%= label :note, :content %><br />
     <%= text_area :note, :content %>
     <br />
-    <table>
+    <table id="home_new_note_field_tag_table">
       <% @tags.each do |tag| %>
         <tr>
           <td><%= check_box_tag "tag[]", tag.id, (@note.tags.map{|e| e.id}.include? tag.id) %></td>
-          <td><%= label_tag tag.name %></td>
+          <td class='tag_name_entry'><%= label_tag tag.name %></td>
         </tr>
       <% end %>
     </table>

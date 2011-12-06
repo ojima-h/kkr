@@ -114,7 +114,7 @@ class Negation < Compilation
 end
 
 class Atom < Compilation
-  def validate(note)
+  def validate(tags)
     note.tags.find_by_name(name.text_value)
   end
   

@@ -9,6 +9,18 @@ $(function($) {
 	});
 	$('#home_new_note_field').find('textarea').focus();
     });						    
+
+    $('.home_new_note_field').submit(function(event){
+        var tag_list = []
+        this.find('#home_new_note_field_tag_table .tag_name_entry')
+            .map(function(){
+                tag_list += $(this).text();
+            });
+        
+                
+                
+                
+    });
 });
 
 function add_tag_to_home_new_note (id, name, color) {

@@ -49,6 +49,7 @@ class RestrictionsController < ApplicationController
         format.html { render action: "new" }
         format.json { render json: @restriction.errors, status: :unprocessable_entity }
       end
+    end
   end
 
   # PUT /restrictions/1
