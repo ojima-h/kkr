@@ -1,0 +1,52 @@
+<p1>Completions</p1><br />
+<p2>Note Content</p2><br />
+<%= @note.content %><br />
+
+<p2>Completions List</p2><br />
+<% @note.tags.build %><br />
+
+<% Restriction.completion_list(links_data).each do |c| %>
+  <%= form_for @note do |note_form| %>
+    <div class="field">
+      <%= note_form.hidden_field :content %>
+
+      <table>
+        <tr>
+          <th>add :</th>
+          <td>
+            <% c[:add].each do |data| %>
+              <%= data[:value] %> :
+              <%= hidden_field_tag "tags[][tag_id]", data[:tag].id %>
+              <%= text_field_tag "tags[][value]", (l = links_data.find{|ld| ld[:tag_id].to_i == data[:tag].id}; l ? l[:value] : "") %> |
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <th>delete :</th>
+          <td>
+            <% c[:delete].each do |data| %>
+              <%= data[:value] %> |
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <th>edit :</th>
+          <td>
+            <% c[:edit].each do |data| %>
+              <%= data[:value] %> :
+              <%= hidden_field_tag "tags[][tag_id]", data[:tag].id %>
+              <%= text_field_tag "tags[][value]", (l = links_data.find{|ld| ld[:tag_id].to_i == data[:tag].id}; l ? l[:value] : "") %> |
+            <% end %>
+          </td>
+        </tr>
+      </table>
+      <% c[:keep].each do |data| %>
+        <%= hidden_field_tag "tags[][tag_id]", data[:tag_id] %>
+        <%= hidden_field_tag "tags[][value]", data[:value] %>
+      <% end %>
+    </div>
+    <div class="actoins">
+      <%= note_form.submit %>
+    </div>
+  <% end %>
+<% end %>
