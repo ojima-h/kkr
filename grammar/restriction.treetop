@@ -2,7 +2,7 @@ require 'treetop-utils'
 
 grammar RestrictionGrammar
   rule expression
-    base:conjunction ' '* ops:('>' ' '* c:conjunction)+ <Implication>
+    base:conjunction ' '* ops:('->' ' '* c:conjunction)+ <Implication>
     /
     conjunction
     /
@@ -26,13 +26,15 @@ grammar RestrictionGrammar
   rule term 
     '!' ' '* term <Negation>
     /
-    '(' ' '* expression ' '* ')' ' '* <Parethesis>
+    '(' ' '* expression ')' ' '* <Parethesis>
     /
     atom
   end
            
   rule atom
-    ':' name:([^ !&|>]+) ' '* <Atom>
+    ':' name:([^ !&|\-<>()]+) ' '* cond:('<' / '=' / '>' / '~') ' '* value:([^ ]+) ' '* <Stat>
+    /
+    ':' name:([^ !&|\-<>()]+) ' '* <Atom>
   end
 end
 

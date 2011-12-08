@@ -7,21 +7,39 @@ class Compilation < Treetop::Runtime::SyntaxNode
         }
       }
     }
-  end           
+  end
+
+  # def self.sum(a, b)
+  #   r = (a + b).classify {|o|
+  #     o[:tag].id
+  #   }.map {|k, v|
+  #     if v.any? {|u| u[:type] == :exp}
+  #       v.delete_if {|u| u[:type] == :tag}
+  #     end
+  #     v
+  #   }.inject(Set[]) {|acc, o|
+  #     acc.merge o
+  #   }
+  #   if not r then p a; p b end
+  #   r
+  # end
 
   def self.join(a, b)
     a + b
   end
   def self.meet(a, b)
     product(a, b).inject([]) {|acc,e|
+      #t = self.sum(e[0][:t], e[1][:t])
+      #f = self.sum(e[0][:f], e[1][:f])
       acc << {:t => e[0][:t] + e[1][:t], :f => e[0][:f] + e[1][:f]}
     }
   end
   def self.negation(a)
     a.map {|e|
       e[:t].map {|f|
-        {:t => Set.new([]), :f => Set.new([f])}
-      } + e[:f].map {|f|
+        {:t => Set[], :f => Set[f]}
+      } + 
+      e[:f].map {|f|
         {:t => Set.new([f]), :f => Set.new([])}
       }
     }.inject([{:t => Set.new([]), :f => Set.new([])}]) {|acc, e|
@@ -31,12 +49,12 @@ class Compilation < Treetop::Runtime::SyntaxNode
 end      
 
 class Implication < Compilation
-  def validate note
-    not base.validate(note) or
+  def validate links_data
+    not base.validate(links_data) or
       (not ops.elements.empty? and
-       (ops.elements[-1].c.validate(note) or
+       (ops.elements[-1].c.validate(links_data) or
         ops.elements[0...-1].any? {|e|
-          not e.c.validate(note)
+          not e.c.validate(links_data)
         }))
   end
   def complete
@@ -50,9 +68,9 @@ end
 
 class Conjunction < Compilation
   class Meet < Treetop::Runtime::SyntaxNode
-    def val(note,base)
+    def val(links_data,base)
       base and elements.all? {|m|
-        m.term.validate(note)
+        m.term.validate(links_data)
       }
     end
     
@@ -65,9 +83,9 @@ class Conjunction < Compilation
     end
   end
   class Join < Treetop::Runtime::SyntaxNode
-    def val(note, base)
+    def val(links_data, base)
       base or elements.any? {|m|
-        m.term.validate(note)
+        m.term.validate(links_data)
       }
     end
     
@@ -80,9 +98,9 @@ class Conjunction < Compilation
     end
   end
 
-  def validate(note)
-    ops.elements.inject(base.validate(note)) {|acc,e|
-      e.val(note, acc)
+  def validate(links_data)
+    ops.elements.inject(base.validate(links_data)) {|acc,e|
+      e.val(links_data, acc)
     }
   end
   
@@ -95,8 +113,8 @@ end
 
 
 class Parethesis < Compilation
-  def validate(note)
-    expression.validate(note)
+  def validate(links_data)
+    expression.validate(links_data)
   end
   
   def complete
@@ -105,22 +123,109 @@ class Parethesis < Compilation
 end
 
 class Negation < Compilation
-  def validate(note)
-    not term.validate(note)
+  def validate(links_data)
+    not term.validate(links_data)
   end
   def complete
     Compilation.negation(term.complete)
   end
 end
 
-class Atom < Compilation
-  def validate(tags)
-    note.tags.find_by_name(name.text_value)
+class Stat < Compilation
+  def validate(links_data)
+    tag = Tag.first(:conditions => {:name => name.text_value})
+    if tag
+      link_data = links_data.find {|ld|
+        ld[:tag_id].to_i == tag.id
+      }
+      if link_data
+        if link_data[:value]
+          case cond.text_value
+          when '<'
+            Integer(link_data[:value]) < Integer(value.text_value)
+          when '='
+            link_data[:value] == value.text_value
+          when '>'
+            Integer(link_data[:value]) > Integer(value.text_value)
+          when '~'
+            link_data[:value].match (value.text_value)
+          else
+            false
+          end
+        else
+          false
+        end
+      else
+        true
+      end
+    else
+      true
+    end
   end
   
   def complete
-    [{:t => Set.new([name.text_value]), :f => Set.new([])}]
+    tag = Tag.first(:conditions => {:name => name.text_value})
+    if tag
+      pred = Proc.new {|links_data|
+        link_data = links_data.find {|ld|
+          ld[:tag_id].to_i == tag.id
+        }
+        if link_data
+          case cond.text_value
+          when '<'
+            Integer(link_data[:value]) < Integer(value.text_value)
+          when '='
+            link_data[:value] == value.text_value
+          when '>'
+            Integer(link_data[:value]) > Integer(value.text_value)
+          when '~'
+            link_data[:value].match (value.text_value)
+          else
+            false
+          end
+        else
+          true
+        end
+      }
+      [{:t => Set.new([{:type => :exp,
+                         :tag => tag,
+                         :pred => pred,
+                         :value => text_value}]),
+         :f => Set.new([])}]
+    else
+      []
+    end
   end
 end
 
+class Atom < Compilation
+  def validate(links_data)
+    tag = Tag.first(:conditions => {:name => name.text_value})
+    if tag
+      links_data.any? {|ld|
+        ld[:tag_id].to_i == tag.id
+      }
+    else
+      false
+    end
+  end
+  
+  def complete
+    tag = Tag.first(:conditions => {:name => name.text_value})
+    if tag
+      pred = Proc.new {|links_data|
+        links_data.any? {|ld|
+          ld[:tag_id].to_i == tag.id
+        }
+      }
+      [{:t => Set.new([{:type => :tag,
+                         :tag => tag,
+                         :pred => pred,
+                         :value => tag.name}]),
+         :f => Set.new([])}]
+    else
+      []
+    end
+  end
+end
 

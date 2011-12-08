@@ -33,6 +33,30 @@ grammar Search
   end
 
   rule label
+    ':' name:([^ ]+) ' '* cond:('<' / '=' / '>' / '~') ' '* value:([^ ]+) ' '* {
+      def validate(note)
+        l = note.links.find { |link|
+          link.tag.name == name.text_value
+        }
+        if l
+         case cond.text_value
+           when '<'
+             l.value.to_i < value.text_value.to_i
+           when '='
+             l.value == value.text_value
+           when '>'
+             l.value.to_i > value.text_value.to_i
+           when '~'
+             l.value.match (value.text_value)
+           else
+             false
+           end
+         else
+           false
+         end
+       end
+    }
+    /
     ':' name:([^ ]+) ' '* {
       def validate(note)
         note.tags.any? { |tag|

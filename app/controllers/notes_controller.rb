@@ -42,16 +42,35 @@ class NotesController < ApplicationController
   # POST /notes.xml
   def create
     @note = Note.new(params[:note])
-    tag_ids = params[:tag]
 
+    tag_data = params[:tags].find_all {|d|
+      d[:tag_id] and d[:tag_id] != '0'
+    }.map {|d|
+      {:tag_id => d[:tag_id], :value => (d[:value] or "")}
+    }.inject({}) {|acc, d|
+      if acc[d[:tag_id]]
+        acc
+      else
+        acc[d[:tag_id]] = d[:value]
+      end
+    }.map {|k, v|
+      {:tag_id => k, :value => v}
+    }
     
+    tag_ids = tag_data.map{|d| d[:tag_id]}
+    tags = Tag.find(tag_ids)
 
     respond_to do |format|
-      if @note.save and Link.add_link_to_note(@note, tag_ids)
-        format.html { redirect_to('/', :notice => 'Note was successfully created.') }
-        format.xml  { render :xml => '/', :status => :created, :location => @note }
+      if Restriction.validate_restriction(@note, tag_data)
+        if @note.save and Link.add_link_to_note @note, tag_data
+          format.html { redirect_to('/', :notice => 'Note was successfully created.') }
+          format.xml  { render :xml => '/', :status => :created, :location => @note }
+        else
+          format.html { render :action => "new" }
+          format.xml  { render :xml => @note.errors, :status => :unprocessable_entity }
+        end
       else
-        format.html { render :action => "new" }
+        format.html { render :action => "complete", :locals => {:links_data => tag_data}}
         format.xml  { render :xml => @note.errors, :status => :unprocessable_entity }
       end
     end
@@ -61,14 +80,38 @@ class NotesController < ApplicationController
   # PUT /notes/1.xml
   def update
     @note = Note.find(params[:id])
-    tag_ids = params[:tag]
+
+    tag_data = params[:tags].find_all {|d|
+      d[:tag_id] and d[:tag_id] != '0'
+    }.map {|d|
+      {:tag_id => d[:tag_id], :value => (d[:value] or "")}
+    }.inject({}) {|acc, d|
+      if acc[d[:tag_id]] and not acc[d[:tag_id]].empty?
+        acc
+      else
+        acc[d[:tag_id]] = d[:value]
+        acc
+      end
+    }.map {|k, v|
+      {:tag_id => k, :value => v}
+    }
+
+    tag_ids = tag_data.map{|d| d[:tag_id]}
+    tags = Tag.find(tag_ids)
 
     respond_to do |format|
-      if @note.update_attributes(params[:note]) and Link.sync(@note, tag_ids)
-        format.html { redirect_to('/', :notice => 'Note was successfully updated.') }
-        format.xml  { head :ok }
+      if Restriction.validate_restriction(@note, tag_data)
+        if @note.update_attributes(params[:note]) and
+            Link.sync(@note, tag_data)
+        then
+          format.html { redirect_to('/', :notice => 'Note was successfully updated.') }
+          format.xml  { head :ok }
+        else
+          format.html { render :action => "edit" }
+          format.xml  { render :xml => @note.errors, :status => :unprocessable_entity }
+        end
       else
-        format.html { render :action => "edit" }
+        format.html { render :action => "complete", :locals => {:links_data => tag_data} }
         format.xml  { render :xml => @note.errors, :status => :unprocessable_entity }
       end
     end

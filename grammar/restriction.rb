@@ -63,11 +63,11 @@ module RestrictionGrammar
         s5, i5 = [], index
         loop do
           i6, s6 = index, []
-          if has_terminal?('>', false, index)
-            r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
-            @index += 1
+          if has_terminal?('->', false, index)
+            r7 = instantiate_node(SyntaxNode,input, index...(index + 2))
+            @index += 2
           else
-            terminal_parse_failure('>')
+            terminal_parse_failure('->')
             r7 = nil
           end
           s6 << r7
@@ -467,51 +467,32 @@ module RestrictionGrammar
           r10 = _nt_expression
           s6 << r10
           if r10
-            s11, i11 = [], index
-            loop do
-              if has_terminal?(' ', false, index)
-                r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure(' ')
-                r12 = nil
-              end
-              if r12
-                s11 << r12
-              else
-                break
-              end
+            if has_terminal?(')', false, index)
+              r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure(')')
+              r11 = nil
             end
-            r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
             s6 << r11
             if r11
-              if has_terminal?(')', false, index)
-                r13 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure(')')
-                r13 = nil
-              end
-              s6 << r13
-              if r13
-                s14, i14 = [], index
-                loop do
-                  if has_terminal?(' ', false, index)
-                    r15 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                    @index += 1
-                  else
-                    terminal_parse_failure(' ')
-                    r15 = nil
-                  end
-                  if r15
-                    s14 << r15
-                  else
-                    break
-                  end
+              s12, i12 = [], index
+              loop do
+                if has_terminal?(' ', false, index)
+                  r13 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure(' ')
+                  r13 = nil
                 end
-                r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
-                s6 << r14
+                if r13
+                  s12 << r13
+                else
+                  break
+                end
               end
+              r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+              s6 << r12
             end
           end
         end
@@ -526,9 +507,9 @@ module RestrictionGrammar
       if r6
         r0 = r6
       else
-        r16 = _nt_atom
-        if r16
-          r0 = r16
+        r14 = _nt_atom
+        if r14
+          r0 = r14
         else
           @index = i0
           r0 = nil
@@ -546,6 +527,21 @@ module RestrictionGrammar
       elements[1]
     end
 
+    def cond
+      elements[3]
+    end
+
+    def value
+      elements[5]
+    end
+
+  end
+
+  module Atom1
+    def name
+      elements[1]
+    end
+
   end
 
   def _nt_atom
@@ -559,63 +555,243 @@ module RestrictionGrammar
       return cached
     end
 
-    i0, s0 = index, []
+    i0 = index
+    i1, s1 = index, []
     if has_terminal?(':', false, index)
-      r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
+      r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
       @index += 1
     else
       terminal_parse_failure(':')
-      r1 = nil
+      r2 = nil
     end
-    s0 << r1
-    if r1
-      s2, i2 = [], index
+    s1 << r2
+    if r2
+      s3, i3 = [], index
       loop do
-        if has_terminal?('\G[^ !&|>]', true, index)
-          r3 = true
+        if has_terminal?('\G[^ !&|\\-<>()]', true, index)
+          r4 = true
           @index += 1
         else
-          r3 = nil
+          r4 = nil
         end
-        if r3
-          s2 << r3
+        if r4
+          s3 << r4
         else
           break
         end
       end
-      if s2.empty?
-        @index = i2
-        r2 = nil
+      if s3.empty?
+        @index = i3
+        r3 = nil
       else
-        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+        r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
       end
-      s0 << r2
-      if r2
-        s4, i4 = [], index
+      s1 << r3
+      if r3
+        s5, i5 = [], index
         loop do
           if has_terminal?(' ', false, index)
-            r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure(' ')
-            r5 = nil
+            r6 = nil
           end
-          if r5
-            s4 << r5
+          if r6
+            s5 << r6
           else
             break
           end
         end
-        r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
-        s0 << r4
+        r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+        s1 << r5
+        if r5
+          i7 = index
+          if has_terminal?('<', false, index)
+            r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure('<')
+            r8 = nil
+          end
+          if r8
+            r7 = r8
+          else
+            if has_terminal?('=', false, index)
+              r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure('=')
+              r9 = nil
+            end
+            if r9
+              r7 = r9
+            else
+              if has_terminal?('>', false, index)
+                r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure('>')
+                r10 = nil
+              end
+              if r10
+                r7 = r10
+              else
+                if has_terminal?('~', false, index)
+                  r11 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure('~')
+                  r11 = nil
+                end
+                if r11
+                  r7 = r11
+                else
+                  @index = i7
+                  r7 = nil
+                end
+              end
+            end
+          end
+          s1 << r7
+          if r7
+            s12, i12 = [], index
+            loop do
+              if has_terminal?(' ', false, index)
+                r13 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure(' ')
+                r13 = nil
+              end
+              if r13
+                s12 << r13
+              else
+                break
+              end
+            end
+            r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+            s1 << r12
+            if r12
+              s14, i14 = [], index
+              loop do
+                if has_terminal?('\G[^ ]', true, index)
+                  r15 = true
+                  @index += 1
+                else
+                  r15 = nil
+                end
+                if r15
+                  s14 << r15
+                else
+                  break
+                end
+              end
+              if s14.empty?
+                @index = i14
+                r14 = nil
+              else
+                r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
+              end
+              s1 << r14
+              if r14
+                s16, i16 = [], index
+                loop do
+                  if has_terminal?(' ', false, index)
+                    r17 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                    @index += 1
+                  else
+                    terminal_parse_failure(' ')
+                    r17 = nil
+                  end
+                  if r17
+                    s16 << r17
+                  else
+                    break
+                  end
+                end
+                r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
+                s1 << r16
+              end
+            end
+          end
+        end
       end
     end
-    if s0.last
-      r0 = instantiate_node(Atom,input, i0...index, s0)
-      r0.extend(Atom0)
+    if s1.last
+      r1 = instantiate_node(Stat,input, i1...index, s1)
+      r1.extend(Atom0)
     else
-      @index = i0
-      r0 = nil
+      @index = i1
+      r1 = nil
+    end
+    if r1
+      r0 = r1
+    else
+      i18, s18 = index, []
+      if has_terminal?(':', false, index)
+        r19 = instantiate_node(SyntaxNode,input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure(':')
+        r19 = nil
+      end
+      s18 << r19
+      if r19
+        s20, i20 = [], index
+        loop do
+          if has_terminal?('\G[^ !&|\\-<>()]', true, index)
+            r21 = true
+            @index += 1
+          else
+            r21 = nil
+          end
+          if r21
+            s20 << r21
+          else
+            break
+          end
+        end
+        if s20.empty?
+          @index = i20
+          r20 = nil
+        else
+          r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
+        end
+        s18 << r20
+        if r20
+          s22, i22 = [], index
+          loop do
+            if has_terminal?(' ', false, index)
+              r23 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure(' ')
+              r23 = nil
+            end
+            if r23
+              s22 << r23
+            else
+              break
+            end
+          end
+          r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
+          s18 << r22
+        end
+      end
+      if s18.last
+        r18 = instantiate_node(Atom,input, i18...index, s18)
+        r18.extend(Atom1)
+      else
+        @index = i18
+        r18 = nil
+      end
+      if r18
+        r0 = r18
+      else
+        @index = i0
+        r0 = nil
+      end
     end
 
     node_cache[:atom][start_index] = r0

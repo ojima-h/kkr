@@ -16,10 +16,6 @@ $(function($) {
             .map(function(){
                 tag_list += $(this).text();
             });
-        
-                
-                
-                
     });
 });
 
