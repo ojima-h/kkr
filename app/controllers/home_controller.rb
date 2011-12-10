@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  before_filter :authenticate_user!
+
   def index
     @notes = Note.find(:all, :order => 'updated_at DESC')
     @tags = Tag.find(:all, :order => 'updated_at DESC')

@@ -1,4 +1,6 @@
 class RestrictionsController < ApplicationController
+    before_filter :authenticate_user!
+
   # GET /restrictions
   # GET /restrictions.json
   def index

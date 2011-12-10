@@ -8,6 +8,7 @@ gem 'rails', '3.1.2' #, '3.0.10'
 gem 'sqlite3'
 gem 'jquery-rails'
 gem 'treetop'
+gem 'devise'
 
 # Use unicorn as the web server
 # gem 'unicorn'

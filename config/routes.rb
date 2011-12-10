@@ -1,4 +1,6 @@
 Kkr::Application.routes.draw do
+  devise_for :users
+
   resources :restrictions
 
   resources :tags
