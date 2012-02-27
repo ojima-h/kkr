@@ -1,0 +1,20 @@
+<% @notes.each do |note| %>
+  <%= div_for note, :onclick => 'location.href = "%s"' % edit_note_url(note) do %>
+    <%= link_to "x", note, :method => :delete, :class => "delete_button" %>
+    <div class="links">
+      <% note.links.each do |link| %>
+        <%= div_for link, :style => "background-color:%s" % link.tag.color do %>
+          <%= hidden_field_tag "tag_info", link.tag.to_json %>
+          <%= link_to edit_link_path(link) do %>
+            <%= link.tag.name %>
+            <% if link.value and not link.value.empty? %>
+              : <%= link.value %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+    <%= format note.content %>
+    <%= clear %>
+  <% end %>
+<% end %>

@@ -1,11 +1,17 @@
 require 'test_helper'
 
 class LinksControllerTest < ActionController::TestCase
+  include Devise::TestHelpers
+
   setup do
-    @link = links(:one)
+    @link = Factory(:link)
+
+    @request.env["devise.mapping"] = Devise.mappings[:one]
+    sign_in users(:one)
   end
 
   test "should get index" do
+    p Link.all
     get :index
     assert_response :success
     assert_not_nil assigns(:links)

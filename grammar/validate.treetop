@@ -1,0 +1,43 @@
+require 'treetop-utils'
+
+grammar Validate
+  rule expression
+    base:term ' '* ops:(
+      ('&' ' '* term)+ <Expression::Meet>
+      /
+      ('|' ' '* term)+ <Expression::Join>
+    )+ <Expression>
+    /
+    term
+    /
+    atom
+  end
+  
+  rule term 
+    '!' ' '* term <Negation>
+    /
+    '(' ' '* expression ')' ' '* <Parethesis>
+    /
+    atom
+  end
+           
+  rule atom
+    name:'$' ' '* cond:('~' / '=' / '>') ' '* value ' '* <Content>
+    /
+    name:([^ !&|\-<>()]+) ' '* cond:('<' / '=' / '>' / '~') ' '* value ' '* <Stat>
+    /
+    name:([^ !&|\-<>()]+) ' '* <Atom>
+  end
+  
+  rule value
+    '"' c:([^"]+) '"'
+    {
+     def text_value
+       c.text_value
+     end
+    }
+    /
+    [^ ]+
+  end
+end
+

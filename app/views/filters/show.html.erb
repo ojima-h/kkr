@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Condition:</b>
+  <%= @filter.cond %>
+</p>
+
+<p>
+  <b>Manipulations:</b><br />
+  <%= render :partial => "manipulations/list", :locals => {:manipulations => @filter.manipulations} %>
+</p>
+
+<%= link_to 'Edit', edit_filter_path(@filter) %> |
+<%= link_to 'Back', filters_path %>

@@ -1,9 +1,24 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  note: 
-  tag: 
+  note: one
+  tag: one
 
 two:
-  note: 
-  tag: 
+  note: one
+  tag: two
+
+link_01_06_03:
+  note: note_06
+  tag: tag_03
+  value: link_value_01
+
+link_01_06_04:
+  note: note_06
+  tag: tag_04
+  value: link_value_02
+
+link_02_04_04:
+  note: note_04
+  tag: tag_04
+  value: link_value_02

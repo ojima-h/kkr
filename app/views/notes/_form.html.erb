@@ -1,37 +1,45 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'note' %>
+<% end %>  
+
+<% content_for :main do %>
 <%= form_for @note do |note_form| %>
+  <% if @note.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@note.errors.count, "error") %> prohibited this note from being saved:</h2>
+      <ul>
+      <% @note.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <div class="field">
-    <%= note_form.label :content %><br />
-    <%= note_form.text_area :content %>
-    <br />
-    <table id="home_new_note_field_tag_table">
+    <p>
+      <%= note_form.label :content %><br />
+      <%= note_form.text_area :content %>
+    </p>
+
+    <table>
       <% @note.links.each do |link| %>
         <tr>
-          <td>
-            <%= hidden_field_tag "tags[][tag_id]", 0 %>
-            <%= check_box_tag "tags[][tag_id]", link.tag.id, true %>
-          </td>
-          <td><%= link.tag.name %></td>
-          <td><%= text_field_tag "tags[][value]", link.value %></td>
-        </tr>
-      <% end %>
-
-      <% Tag.where(["not id in (?)", @note.tags]).each do |tag| %>
-        <tr>
-          <td>
-            <%= hidden_field_tag "tags[][tag_id]", 0 %>
-            <%= check_box_tag "tags[][tag_id]", tag.id, false %>
-          </td>
-          <td><%= tag.name %></td>
-          <td><%= text_field_tag "tags[][value]", nil %></td>
+          <%= fields_for :links, link, :index => '' do |f| %>
+            <td><%= text_field_tag "links[][tag_name]", link.tag.name %></td>
+            <td><%= f.text_field :value %></td>
+            <td><%= f.hidden_field :id, :value => link.id %></td>
+            <td><%= link_to 'x', link, :confirm => 'Are you sure?', :method => :delete, :remote => true, :class => "delete_link" %></td>
+          <% end %>
         </tr>
       <% end %>
     </table>
-    <%= hidden_field_tag "tags[][tag_id]", 0 %>
-    <%= hidden_field_tag "tags[][value]", nil %>
-    <%= hidden_field_tag "test", @note.tags.first %>
+    <p>
+      <%= link_to "Add Link", "#", :class => "add_link" %>
+    </p>
+
   </div>
   <div class="actions">
     <%= note_form.submit %>
   </div>
 <% end %>
-
+<% end %>

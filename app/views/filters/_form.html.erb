@@ -1,0 +1,34 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'filter' %>
+<% end %>  
+
+<% content_for :main do %>
+<%= form_for(@filter) do |filter_form| %>
+  <% if @filter.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@filter.errors.count, "error") %> prohibited this filter from being saved:</h2>
+      <ul>
+      <% @filter.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <p>
+      <%= filter_form.label :cond %><br />
+      <%= filter_form.text_field :cond %>
+    </p>
+
+    <%= render :partial => "manipulations/form", :locals => {:filter => @filter} %>
+    <p>
+      <%= link_to "Add Manipulation", "#", :class => "add_manipulation" %>
+    </p>
+    
+  </div>
+  <div class="actions">
+    <%= filter_form.submit %>
+  </div>
+<% end %>
+<% end %>

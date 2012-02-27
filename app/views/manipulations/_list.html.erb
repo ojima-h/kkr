@@ -1,0 +1,14 @@
+<% manipulations.each do |manipulation| %>
+  <% case manipulation.sort %>
+  <% when "append" %>
+    タグ <em><%= manipulation.object %> (<%= manipulation.value %>)</em> を<em>追加</em><br />
+  <% when "delete" %>
+    タグ <em><%= manipulation.object %></em> を<em>削除</em><br />
+  <% when "modify" %>
+    タグ <em><%= manipulation.object %></em> の値を <em><%= manipulation.value %></em> に変更<br />
+  <% when "subst" %>
+    本文の <em><%= manipulation.object %></em> を <em><%= manipulation.value %></em> に変更<br />
+  <% when "attach" %>
+    本文の <em><%= manipulation.object %></em> に対し, タグ <em><%= manipulation.value %></em> を付加<br />
+  <% end %>
+<% end %>

@@ -33,7 +33,7 @@ grammar Search
   end
 
   rule label
-    ':' name:([^ ]+) ' '* cond:('<' / '=' / '>' / '~') ' '* value:([^ ]+) ' '* {
+    ':' name:([^ ]+) ' '* cond:('<' / '=' / '>' / '~') ' '* '"' value:([^"]+) '"' ' '* {
       def validate(note)
         l = note.links.find { |link|
           link.tag.name == name.text_value
@@ -47,7 +47,7 @@ grammar Search
            when '>'
              l.value.to_i > value.text_value.to_i
            when '~'
-             l.value.match (value.text_value)
+             l.value.match (Regexp.new(value.text_value))
            else
              false
            end

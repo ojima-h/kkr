@@ -3,16 +3,9 @@ class Tag < ActiveRecord::Base
   has_many :links, :dependent => :destroy
   has_many :notes, :through => :links
 
-  def Tag.default_color
-    "#87CEEB" #skyblue
-  end
-
-  def color
-    c = read_attribute(:color)
-    if c
-      c
-    else
-      Tag.default_color
+  after_initialize do
+    if new_record? and (self.color == nil or self.color.blank?)
+      self.color = "lightgray"
     end
   end
 end

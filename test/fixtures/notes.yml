@@ -1,7 +1,19 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-  content: MyText
+note_01:
+  content: This is normal text
 
-two:
-  content: MyText
+note_02:
+  content: This is normal text\nwith second line
+
+note_03:
+  content: 日本語を含んでいます
+
+note_04:
+  content: Including 12/3 as date
+
+note_05:
+  content: <p>Including HTML fragment</p>
+
+note_06:
+  content: This is normal text

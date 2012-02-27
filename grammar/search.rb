@@ -312,7 +312,7 @@ module Search
     end
 
     def value
-      elements[5]
+      elements[6]
     end
 
   end
@@ -323,14 +323,17 @@ module Search
         link.tag.name == name.text_value
       }
       if l
-         if cond.text_value == '<'
+       case cond.text_value
+         when '<'
            l.value.to_i < value.text_value.to_i
-         elsif cond.text_value == '='
+         when '='
            l.value == value.text_value
-         elsif cond.text_value == '>'
+         when '>'
            l.value.to_i > value.text_value.to_i
-         elsif cond.text_value == '~'
-           l.value.match (value.text_value)
+         when '~'
+           l.value.match (Regexp.new(value.text_value))
+         else
+           false
          end
        else
          false
@@ -482,45 +485,65 @@ module Search
             r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
             s1 << r12
             if r12
-              s14, i14 = [], index
-              loop do
-                if has_terminal?('\G[^ ]', true, index)
-                  r15 = true
-                  @index += 1
-                else
-                  r15 = nil
-                end
-                if r15
-                  s14 << r15
-                else
-                  break
-                end
-              end
-              if s14.empty?
-                @index = i14
-                r14 = nil
+              if has_terminal?('"', false, index)
+                r14 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
               else
-                r14 = instantiate_node(SyntaxNode,input, i14...index, s14)
+                terminal_parse_failure('"')
+                r14 = nil
               end
               s1 << r14
               if r14
-                s16, i16 = [], index
+                s15, i15 = [], index
                 loop do
-                  if has_terminal?(' ', false, index)
-                    r17 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  if has_terminal?('\G[^"]', true, index)
+                    r16 = true
                     @index += 1
                   else
-                    terminal_parse_failure(' ')
-                    r17 = nil
+                    r16 = nil
                   end
-                  if r17
-                    s16 << r17
+                  if r16
+                    s15 << r16
                   else
                     break
                   end
                 end
-                r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
-                s1 << r16
+                if s15.empty?
+                  @index = i15
+                  r15 = nil
+                else
+                  r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
+                end
+                s1 << r15
+                if r15
+                  if has_terminal?('"', false, index)
+                    r17 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                    @index += 1
+                  else
+                    terminal_parse_failure('"')
+                    r17 = nil
+                  end
+                  s1 << r17
+                  if r17
+                    s18, i18 = [], index
+                    loop do
+                      if has_terminal?(' ', false, index)
+                        r19 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                        @index += 1
+                      else
+                        terminal_parse_failure(' ')
+                        r19 = nil
+                      end
+                      if r19
+                        s18 << r19
+                      else
+                        break
+                      end
+                    end
+                    r18 = instantiate_node(SyntaxNode,input, i18...index, s18)
+                    s1 << r18
+                  end
+                end
               end
             end
           end
@@ -538,67 +561,67 @@ module Search
     if r1
       r0 = r1
     else
-      i18, s18 = index, []
+      i20, s20 = index, []
       if has_terminal?(':', false, index)
-        r19 = instantiate_node(SyntaxNode,input, index...(index + 1))
+        r21 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure(':')
-        r19 = nil
+        r21 = nil
       end
-      s18 << r19
-      if r19
-        s20, i20 = [], index
+      s20 << r21
+      if r21
+        s22, i22 = [], index
         loop do
           if has_terminal?('\G[^ ]', true, index)
-            r21 = true
+            r23 = true
             @index += 1
           else
-            r21 = nil
+            r23 = nil
           end
-          if r21
-            s20 << r21
+          if r23
+            s22 << r23
           else
             break
           end
         end
-        if s20.empty?
-          @index = i20
-          r20 = nil
+        if s22.empty?
+          @index = i22
+          r22 = nil
         else
-          r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
+          r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
         end
-        s18 << r20
-        if r20
-          s22, i22 = [], index
+        s20 << r22
+        if r22
+          s24, i24 = [], index
           loop do
             if has_terminal?(' ', false, index)
-              r23 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              r25 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure(' ')
-              r23 = nil
+              r25 = nil
             end
-            if r23
-              s22 << r23
+            if r25
+              s24 << r25
             else
               break
             end
           end
-          r22 = instantiate_node(SyntaxNode,input, i22...index, s22)
-          s18 << r22
+          r24 = instantiate_node(SyntaxNode,input, i24...index, s24)
+          s20 << r24
         end
       end
-      if s18.last
-        r18 = instantiate_node(SyntaxNode,input, i18...index, s18)
-        r18.extend(Label2)
-        r18.extend(Label3)
+      if s20.last
+        r20 = instantiate_node(SyntaxNode,input, i20...index, s20)
+        r20.extend(Label2)
+        r20.extend(Label3)
       else
-        @index = i18
-        r18 = nil
+        @index = i20
+        r20 = nil
       end
-      if r18
-        r0 = r18
+      if r20
+        r0 = r20
       else
         @index = i0
         r0 = nil

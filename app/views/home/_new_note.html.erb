@@ -1,9 +1,11 @@
-<div id="home_new_note_tags">
+<div id="new_note_links">
 </div>
-<%= form_tag('/notes', :method => "post") do %>
-  <div id="home_new_note_field" class="field">
+<%= form_tag("/notes", :method => "post") do %>
+  <div class="field">
     <%= text_area :note, :content, :rows => 5 %>
     <br />
+    <%= hidden_field_tag "links[][tag_id]", 0 %>
+    <%= hidden_field_tag "links[][value]", nil %>
   </div>
   <div class="actions">
     <%= submit_tag %>

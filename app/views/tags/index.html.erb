@@ -3,15 +3,14 @@
 <table>
   <tr>
     <th>Name</th>
-    <th></th>
+    <th>Color</th>
     <th></th>
     <th></th>
   </tr>
-
 <% @tags.each do |tag| %>
   <tr>
     <td><%= tag.name %></td>
-    <td><%= link_to 'Show', tag %></td>
+    <td><%= content_tag(:span, tag.color, :style => "background-color:%s" % tag.color) %></td>
     <td><%= link_to 'Edit', edit_tag_path(tag) %></td>
     <td><%= link_to 'Destroy', tag, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>

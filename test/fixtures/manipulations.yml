@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  filter: one
+  sort: append
+  object: tag_name
+  value: link_value
+
+two:
+  filter: one
+  sort: delete
+  object: tag_name
+  value: 

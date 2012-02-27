@@ -1,0 +1,142 @@
+#left {
+    margin-left: auto;
+    margin-right: auto;
+    height : 100%;
+    width : 400pt;
+//    background-color : gray;
+//    float : left;
+}
+
+/* #right { */
+/*     height : 100%; */
+/*     width : 200pt; */
+/*     background-color : lightgray; */
+/*     float : left; */
+/* } */
+
+#new_note {
+    padding : 15pt 0 15pt 15pt;
+    height : 70pt;
+    width : 385pt;
+
+//    background-color : peachpuff;
+    border : 1px solid gray;
+}
+#new_note form {
+    width : 350px;
+}
+#new_note_links {
+    float : right;
+}
+
+#note_list {
+    min-height : 100%;
+    width : 400pt;
+
+//    background-color : lightgray;
+}
+#note_list .links {
+    float : left;
+}
+#note_list .link {
+    margin : 2pt 5pt;
+    padding : 2pt;
+    line-height : 80%;
+}
+#note_list div.note {
+//    display : block;
+    min-height : 50pt;
+    width : 393pt;
+    padding : 4pt; 
+
+    text-decoration : none;
+    
+//    background-color : snow;
+    border-bottom : 1pt solid gray;
+}
+#note_list a.content:hover {
+//    color : black;
+//    background-color : pink;
+}
+#note_list a.content:visited {
+//    color : black;
+//    background-color : snow;
+}
+#note_list .delete_button {
+    display : block;
+    height : 10pt;
+    width : 10pt;
+
+    float : right;
+    
+//    background-color : lightcoral;
+}
+#note_list a.delete_button, #note_list a.delete_button:visited, #note_list a.delete_button:hover {
+    color: black;
+    text-decoration: none;
+}
+
+#tag_list {
+    padding : 10pt;
+    height : 100%;
+    width : 200pt;
+
+    background-color : azure;
+}
+#tag_list h1 {
+    height : 20pt;
+    
+    line-height : 20pt;
+    font-size : 2em;
+    font-weight : bolder;
+    color : gray;
+}    
+#tag_list .tag {
+    margin : 10pt auto;
+    height : 30pt;
+    width : 100pt;
+
+    text-align : center;
+}
+
+#tag_list #tag_list_add_button {
+    background-color : skyblue;
+}
+#tag_list #tag_list_add_button input {
+    width : 80pt;
+
+    text-align : center;
+    font-size : large;
+    font-weight : bold;
+    
+    background-color : lightblue;
+}
+    
+#tag_list .add_button {
+    dispaly : block;
+    height : 10pt;
+    width : 10pt;
+
+    float : left;
+    
+    line-height: 10pt;
+    text-decoration: none;
+    background-color : lightgreen;
+}
+#tag_list .delete_button {
+    dispaly : block;
+    height : 10pt;
+    width : 10pt;
+
+    float : right;
+
+    line-height: 10pt;
+    text-decoration: none;
+    background-color : lightcoral;
+}
+
+#tag_list .value {
+    line-height : 30pt;
+    font-size : large;
+    font-weight : bold;
+}

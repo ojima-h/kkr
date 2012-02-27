@@ -1,7 +1,16 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-  name: MyString
+  name: tag_name
+  color: red
 
 two:
-  name: MyString
+  name: tag_name_2
+
+tag_03:
+  name: tag_name_3
+
+tag_04:
+  name: tag_name_4
+  color: blue
+

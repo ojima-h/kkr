@@ -2,19 +2,26 @@
 <html>
 <head>
   <title>Kkr</title>
-  <%= stylesheet_link_tag :all %>
+  <%= stylesheet_link_tag 'scaffold' %>
+  <%= stylesheet_link_tag 'main' %>
   <%= javascript_include_tag :defaults %>
-  <%= javascript_include_tag 'home' %>
   <%= csrf_meta_tag %>
+  <!-- page specific tags -->
+  <%= yield :header_tags %>  
 </head>
 <body>
   <div id="head">
     <div id="menu">
       <ul>
 	<li id="logo">kkr</li>
-	<li id="search"><%= render 'shared/search' %></li>
+	<li id="search">
+          <%= form_tag '/search', :action => "search" do  %>
+            <%= text_field_tag "cond" %>
+          <% end %>
+        </li>
 	<li class="item"><%= link_to 'HOME', '/' %></li>
-	<li class="item"><%= link_to 'RESTRICTION', '/restrictions' %></li>
+	<li class="item"><%= link_to 'TAG', '/tags' %></li>
+	<li class="item"><%= link_to 'FILTER', '/filters' %></li>
 	<li class="item"><%= link_to 'LOGOUT', '/users/sign_out', :method => :delete %></li>
       </ul>
     </div>

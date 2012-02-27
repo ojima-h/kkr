@@ -1,0 +1,15 @@
+<h1>All Tags :</h1>
+<div id="tag_list_add_button" class="tag">
+  <%= form_for Tag.new do |f| %>
+    <%= text_field :tag, :name %>
+  <% end %>
+</div>
+<% @tags.each do |tag| %>
+  <%= div_for tag, :style => "background-color:%s" % tag.color do %>
+    <%= hidden_field_tag "tag_info", tag.to_json %>
+    <%= link_to '+', '#', :class => "add_button" %>
+    <%= link_to '-', tag, :method => :delete, :class => "delete_button" %>
+    <%= link_to tag.name, edit_tag_path(tag), :class => "value" %>
+    <div style="clear:both"></div>
+  <% end %>
+<% end %>

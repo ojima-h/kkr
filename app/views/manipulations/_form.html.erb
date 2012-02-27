@@ -1,0 +1,16 @@
+<table>
+  <tr><th>Type</th><th>Object</th><th>Value</th><th></th></tr>
+  <% filter.manipulations.each do |manipulation| %>
+    <tr>
+      <%= fields_for :manipulations, manipulation, :index => '' do |f| %>
+        <td><%= f.select :sort, ["append","delete","modify","subst","attach"] %></td>
+        <td><%= f.text_field :object %></td>
+        <td><%= f.text_field :value %></td>
+        <td><%= f.hidden_field :id, :value => manipulation.id %></td>
+        <td><%= link_to 'x', filter_manipulation_path(@filter, manipulation), :confirm => 'Are you sure?', :method => :delete, :remote => true, :class => "delete_manipulation" %></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+
+

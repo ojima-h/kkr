@@ -13,12 +13,12 @@ class HomeController < ApplicationController
     condition = parser.parse(params[:cond])
     if not condition
       @notes = Note.all
-      @search_info = parser.failure_reason + ' : ' + params[:cond]
+      @info = parser.failure_reason + ' : ' + params[:cond]
     else
       @notes = Note.all.find_all do |note|
         condition.validate note
       end
-      @search_info = params[:cond]
+      @info = params[:cond]
     end
 
     @tags = Tag.find(:all, :order => 'updated_at DESC')

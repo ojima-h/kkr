@@ -6,21 +6,21 @@
 html { height : 100%; }
 body {
     height : 100%;
-    background-image : url('bgimg.jpg');
-    background-repeat : no-repeat;
+//    background-image : url('bgimg.jpg');
+//    background-repeat : no-repeat;
 }
 
 #head {
     margin-bottom : 10pt;
-
+    
     height : 30pt;
-    background-color : darkgray;
+    background-color : black;
 }
 
 #menu {
     margin-left : auto;
     margin-right : auto;
-
+    
     width : 600pt;
 }
 #menu ul { list-style : none; }
@@ -35,20 +35,23 @@ body {
 #menu .item {
     display : block;
     width : 60pt;
-}    
+}
 
+#menu a, #menu a:visited {
+    color : white;
+    text-decoration: none;
+}
+ 
 #logo {
     width : 80pt;
     
     font-size : 2em;
     font-weight : 300;
-    color : snow;
+    color : white;
 }
 
 #search {
     width : 100pt;
-
-    background-color : blue;
 }
 
 .clear {
@@ -76,146 +79,3 @@ body {
     color : lightgray;
     text-align : right;
 }
-
-
-#left {
-    height : 100%;
-    width : 400pt;
-    background-color : gray;
-    float : left;
-}
-
-#right {
-    height : 100%;
-    width : 200pt;
-    background-color : lightgray;
-    float : left;
-}
-
-#home_new_note {
-    padding : 15pt 0 15pt 15pt;
-    height : 70pt;
-    width : 385pt;
-
-    background-color : peachpuff;
-}
-#home_new_note form {
-    width : 350px;
-}
-#home_new_note_tags {
-    float : right;
-}
-
-#home_note_list {
-    min-height : 100%;
-    width : 400pt;
-
-    background-color : lightgray;
-}
-#home_note_list .note_tags_field {
-    float : left;
-}
-#home_note_list .note_tags {
-    margin : 2pt 5pt;
-    padding : 2pt;
-    line-height : 80%;
-}
-#home_note_list a.note_content {
-    display : block;
-    min-height : 50pt;
-    width : 393pt;
-    padding : 4pt; 
-
-    text-decoration : none;
-    
-    background-color : snow;
-    border-bottom : 1pt solid gray;
-}
-#home_note_list a.note_content:hover {
-    color : black;
-    background-color : pink;
-}
-#home_note_list a.note_content:visited {
-    color : black;
-    background-color : snow;
-}
-#home_note_list .note_list_entry_delete_button {
-    display : block;
-    height : 10pt;
-    width : 10pt;
-
-    float : right;
-    
-    background-color : lightcoral;
-}
-#home_note_list .note_list_entry_link_button {
-    display : block;
-    height : 10pt;
-    width : 10pt;
-
-    float : right;
-    
-    background-color : lightgreen;
-}
-
-#home_tag_list {
-    padding : 10pt;
-    height : 100%;
-    width : 200pt;
-
-    background-color : azure;
-}
-#home_tag_list .tag_list_label {
-    height : 20pt;
-    
-    line-height : 20pt;
-    font-size : 2em;
-    font-weight : bolder;
-    color : gray;
-}    
-#home_tag_list .tag_list_entry {
-    margin : 10pt auto;
-    height : 30pt;
-    width : 100pt;
-
-    text-align : center;
-    line-height : 30pt;
-    font-size : large;
-    font-weight : bold;
-}
-
-#home_tag_list #tag_list_add_button {
-    background-color : skyblue;
-}
-#home_tag_list #tag_list_add_button input {
-    width : 80pt;
-
-    text-align : center;
-    font-size : large;
-    font-weight : bold;
-    
-    background-color : lightblue;
-}
-    
-#home_tag_list .tag_list_entry_add_button {
-    dispaly : block;
-    height : 10pt;
-    width : 10pt;
-
-    float : left;
-    
-    background-color : lightgreen;
-}
-#home_tag_list .tag_list_entry_delete_button {
-    dispaly : block;
-    height : 10pt;
-    width : 10pt;
-
-    float : right;
-    
-    background-color : lightcoral;
-}
-
-
-    
-    

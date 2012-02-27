@@ -1,6 +1,6 @@
 module ApplicationHelper
-  def formate text
-    raw html_escape(text).gsub(/\t/,'    ').gsub(' ', '&nbsp;').gsub(/\r\n|\r|\n/,'<br />')
+  def format text
+    raw text.gsub(/\r\n|\r|\n/,'<br />') #.gsub(' ', '&nbsp;').gsub(/\t/,'    ')
   end
   def clear
     raw '<div style="clear : both"></div>'
