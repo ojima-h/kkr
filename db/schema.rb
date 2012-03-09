@@ -11,7 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111209083646) do
+ActiveRecord::Schema.define(:version => 20120112061058) do
+
+  create_table "filters", :force => true do |t|
+    t.string   "cond"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "links", :force => true do |t|
     t.integer  "note_id"
@@ -22,14 +28,19 @@ ActiveRecord::Schema.define(:version => 20111209083646) do
     t.boolean  "hidden",     :default => false
   end
 
-  create_table "notes", :force => true do |t|
-    t.text     "content"
+  create_table "manipulations", :force => true do |t|
+    t.integer  "filter_id"
+    t.string   "sort"
+    t.string   "object"
+    t.string   "value"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "restrictions", :force => true do |t|
-    t.string   "cond"
+  add_index "manipulations", ["filter_id"], :name => "index_manipulations_on_filter_id"
+
+  create_table "notes", :force => true do |t|
+    t.text     "content"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

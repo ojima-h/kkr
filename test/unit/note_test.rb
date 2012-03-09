@@ -10,18 +10,31 @@ class NoteTest < ActiveSupport::TestCase
     assert !note.save
   end
 
+  # association
   test "should allow empty link" do
     note = Note.new(:content => "test content")
     note.links = []
     assert note.save
   end
+  test "should save auto" do
+    note = create(:note_with_links)
+    v = note.links.first.value
+    note.links.first.value = "new_#{v}"
 
+    assert note.save
+
+    l = Link.find(note.links.first.id)
+    assert_equal "new_#{v}", l.value 
+  end
+
+  # test for update_link
   test "should update links" do
-    note = notes(:note_06)
+    note = create(:note_with_links)
     link = note.links.first
-    tag_1 = tags(:one)
-    tag_2 = tags(:two)
-    links_param = [{:value => "link_value_org", :tag_name => "tag_name"},
+    tag_1 = create(:tag, :name => "tag_name_1")
+    tag_2 = create(:tag, :name => "tag_name_2")
+    
+    links_param = [{:value => "link_value_org", :tag_name => "tag_name_1"},
                    {:tag_name => "tag_name_2"}]
     
     assert note.update_links(links_param), "could not update links"
@@ -30,9 +43,10 @@ class NoteTest < ActiveSupport::TestCase
     assert !note.links.exists?(:value => link.value, :tag_id => link.tag.id)
   end
   test "should not add duplicated links throw update" do
-    note = notes(:note_06)
+    note = create(:note_with_links)
     link = note.links.first
-    tag = tags(:one)
+    tag = (Tag.where(:name => "tag_name").first or create(:tag, :name => "tag_name"))
+
     links_param = [{:value => "link_value_org", :tag_name => "tag_name"},
                    {:value => "link_value_org", :tag_name => "tag_name"}]
     
@@ -42,9 +56,9 @@ class NoteTest < ActiveSupport::TestCase
   end
 
   test "shold create new tag with update" do
-    note = notes(:note_06)
+    note = create(:note_with_links)
     link = note.links.first
-    tag = tags(:one)
+    create(:tag)
     links_param = [{:value => "link_value_valid", :tag_name => "tag_name"},
                    {:value => "link_value_invalid"},
                    {:value => "link_value_invalid_2", :tag_name => "new_tag_name"}]
@@ -61,65 +75,64 @@ class NoteTest < ActiveSupport::TestCase
   #
   # Test for Manipulations
   #
-  test "should execute add manipulation correctly" do
-    Filter.destroy_all
-    filter = Filter.new(:cond => "tag_name")
-    filter.manipulations << Manipulation.new(:sort => "append", :object => "new_tag", :value => "link_value")
-    assert filter.save, "test could not be prepared"
-
-    note = notes(:note_06)
-    tag = tags(:tag_03)
-    assert note.update_links([{:value => "link_value", :tag_id => "tag_name"}]), "preparation failed"
+  test "should execute add manipulation" do
+    manipulation = create(:append_manipulation)
+    note = create(:note)
+    tag = create(:tag)
     
-    assert note.execute_manipulations [filter]
-    assert Tag.exists?(:name => "new_tag")
-    assert note.links.joins(:tag).exists?(:value => "link_value", :tags => {:name => "new_tag"})
+    assert note.execute manipulation
+    assert Tag.exists?(:name => "tag_name")
+    assert note.links.joins(:tag).exists?(:value => "link_value", :tags => {:name => "tag_name"})
   end
-  test "should execute delete manipulate correctly" do
-    Filter.destroy_all
-    filter = Filter.new(:cond => "tag_name_3")
-    filter.manipulations << Manipulation.new(:sort => "delete", :object => "tag_name_4", :value => "link_value")
-    assert filter.save, "test could not be prepared"
+  
+  test "should execute delete manipulate" do
+    note = create(:note_with_links)
+    tags = note.links.map {|l| l.tag}
+    manipulation = create(:delete_manipulation, :object => tags[0].name)
 
-    note = notes(:note_06)
-    tag_03 = tags(:tag_03)
-    tag_04 = tags(:tag_04)
-    assert note.execute_manipulations([filter]), "execute_manipulation returned false"
-    assert Tag.exists?(tag_04.id), "execute_manipulation does not change(1)"
-    assert !note.tags.exists?(:name => "tag_name_4"), "execute_manipulation does not change(2)"
-    assert note.tags.exists?(:name => "tag_name_3"), "execute_manipulation does not change(3)"
+    assert note.execute(manipulation)
+    assert tags.all? {|t| Tag.exists?(t.id)}
+    assert !note.links.joins(:tag).exists?(:tags => {:name => tags[0].name})
+    assert note.links.joins(:tag).exists?(:tags => {:name => tags[1].name})
+    assert note.links.joins(:tag).exists?(:tags => {:name => tags[2].name})
   end
-  test "should execute modify manipulate correctly" do
-    Filter.destroy_all
-    filter = Filter.new(:cond => "tag_name")
-    filter.manipulations << Manipulation.new(:sort => "modify", :object => "tag_name_3", :value => "link_value_new")
-    assert filter.save, "test could not be prepared"
 
-    note = notes(:note_06)
-    tag = tags(:tag_03)
-    assert note.execute_manipulations [filter]
-    assert note.links.joins(:tag).exists?(:value => "link_value_new", :tags => {:name => "tag_name_3"})
+  test "should execute modify manipulate" do
+    note = create(:note_with_links)
+    link = note.links.first
+    manipulation = create(:modify_manipulation,
+                          :object => link.tag.name,
+                          :value => "new_#{link.value}")
+
+    assert note.execute manipulation
+    assert !note.links.joins(:tag).exists?(:value => link.value,
+                                           :tags => {:name => link.tag.name})
+    assert note.links.joins(:tag).exists?(:value => "new_#{link.value}",
+                                          :tags => {:name => link.tag.name})
   end
-  test "should execute subst manipulate correctly" do
-    Filter.destroy_all
-    filter = Filter.new(:cond => "tag_name")
-    filter.manipulations << Manipulation.new(:sort => "subst", :object => "[0-9]+/[0-9]+", :value => "date:&")
-    assert filter.save, "test could not be prepared"
 
-    note = notes(:note_04)
-    assert note.execute_manipulations([filter]), "execution returned false"
-    assert_match  /date:12\/3/, note.content, "manipulation did not executed correctly"
+  test "should execute subst manipulate" do
+    url = "(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)"
+    note = create(:note_with_links, :content => "http://www.google.com")
+    manipulation = create(:subst_manipulation,
+                          :object => url,
+                          :value => "<a href=\"&\">&</a>")
+    
+    assert note.execute manipulation
+    assert_match note.content, "<a href=\"http://www.google.com\">http://www.google.com</a>"
   end
-  test "should execute attach manipulate correctly" do
-    Filter.destroy_all
-    filter = Filter.new(:cond => "tag_name")
-    filter.manipulations << Manipulation.new(:sort => "attach", :object => "[0-9]+/[0-9]+", :value => "date")
-    assert filter.save, "test could not be prepared"
 
-    note = notes(:note_04)
-    assert note.execute_manipulations([filter]), "execution returned false"
+  test "should execute attach manipulate" do
+    Tag.destroy_all
+    note = create(:note, :content => "content 10/2 date")
+    manipulation = create(:attach_manipulation,
+                          :object => "[0-9]+/[0-9]+",
+                          :value => "date")
+    
+    assert note.execute manipulation
     assert Tag.exists?(:name => "date")
-    assert note.links.joins(:tag).exists?(:value => "12/3", :tags => {:name => "date"}), "manipulation did not executed correctly"
+    assert note.links.joins(:tag).exists?(:value => "10/2",
+                                          :tags => {:name => "date"})
   end
   
 end

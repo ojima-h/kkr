@@ -1,11 +1,15 @@
 require 'treetop-utils'
 
 grammar Validate
+  rule start
+    ' '* expression ' '* <Start>
+  end
+  
   rule expression
-    base:term ' '* ops:(
-      ('&' ' '* term)+ <Expression::Meet>
+    base:term ops:(
+      (' '+ 'and' ' '+ term)+ <Expression::Meet>
       /
-      ('|' ' '* term)+ <Expression::Join>
+      (' '+ 'or' ' '+ term)+ <Expression::Join>
     )+ <Expression>
     /
     term
@@ -14,30 +18,40 @@ grammar Validate
   end
   
   rule term 
-    '!' ' '* term <Negation>
+    'not' ' '+ term <Negation>
     /
-    '(' ' '* expression ')' ' '* <Parethesis>
+    '(' ' '* expression ' '* ')' <Parethesis>
     /
     atom
   end
            
   rule atom
-    name:'$' ' '* cond:('~' / '=' / '>') ' '* value ' '* <Content>
+    cond:('match' / 'include') ' '+ arg <Content>
     /
-    name:([^ !&|\-<>()]+) ' '* cond:('<' / '=' / '>' / '~') ' '* value ' '* <Stat>
+    !reserved name:[^ ]+ ' '* cond:('<' / '=' / '>' / '~') ' '* arg <Stat>
     /
-    name:([^ !&|\-<>()]+) ' '* <Atom>
+    !reserved name:[^ ]+ <Atom>
   end
   
-  rule value
-    '"' c:([^"]+) '"'
-    {
-     def text_value
-       c.text_value
-     end
-    }
+  rule arg
+    '"' value:([^"]+) '"'
     /
-    [^ ]+
+    '/' value:(([^/\\] / '\\' .)+) '/'
+    /
+    !reserved value:([^ ]+)
+  end
+
+  rule reserved
+    'and'
+    / 'or'
+    / 'not'
+    / 'match'
+    / 'inlucde'
+    / '<'
+    / '>'
+    / '='
+    / '~'
+    / '('
+    / ')'
   end
 end
-

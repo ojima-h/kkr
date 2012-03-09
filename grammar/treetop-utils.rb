@@ -1,3 +1,9 @@
+class Start < Treetop::Runtime::SyntaxNode
+  def validate(note_param)
+    expression.validate note_param
+  end
+end
+
 class Expression < Treetop::Runtime::SyntaxNode
   class Meet < Treetop::Runtime::SyntaxNode
     def val(note_param,base)
@@ -36,40 +42,40 @@ end
 
 class Content < Treetop::Runtime::SyntaxNode
   def validate(note_param)
-    case cond.text_value
-    when '~'
-      note_param["content"].match value.text_value
-    when '='
-      note_param["content"] == value.text_value
-    when '>'
-      note_param["content"].include? value.text_value
-    else
-      false
-    end
+    note_param[:content] and 
+      case cond.text_value
+      when 'match'
+        note_param[:content].match arg.value.text_value
+      when 'equal'
+        note_param[:content] == arg.value.text_value
+      when 'include'
+        note_param[:content].include? arg.value.text_value
+      else
+        false
+      end
   end
 end
 
 class Stat < Treetop::Runtime::SyntaxNode
-  def validate(params)
-    tag = Tag.where(:name => name.text_value).first
-    if tag
-      link_data = (params["links"] or []).find {|ld| ld["tag_name"] == tag.name}
-      if link_data and link_data["value"]
-        case cond.text_value
-        when '<'
-          Integer(link_data["value"]) < Integer(value.text_value)
-        when '='
-          link_data["value"] == value.text_value
-        when '>'
-          Integer(link_data["value"]) > Integer(value.text_value)
-        when '~'
-          link_data["value"].match (value.text_value)
-        else
-          false
-        end
-      else
-        false
-      end
+  def validate(note_param)
+    tag_name = name.text_value
+
+    if note_param[:links]
+      link_data = note_param[:links].find {|ld| ld[:tag_name] == tag_name}
+
+      link_data and link_data[:value] and
+        (case cond.text_value
+         when '<'
+           Integer(link_data[:value]) < Integer(arg.value.text_value)
+         when '>'
+           Integer(link_data[:value]) > Integer(arg.value.text_value)
+         when '='
+           link_data[:value] == arg.value.text_value
+         when '~'
+           link_data[:value].match (arg.value.text_value)
+         else
+           false
+         end)
     else
       false
     end
@@ -78,8 +84,7 @@ end
 
 class Atom < Treetop::Runtime::SyntaxNode
   def validate(note_param)
-    tag = Tag.where(:name => name.text_value).first
-    tag and note_param[:links].find {|ld| ld[:tag_id] == tag.id}
+    note_param[:links] and
+      note_param[:links].find {|ld| ld[:tag_name] and ld[:tag_name] == name.text_value}
   end
 end
-

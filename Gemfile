@@ -32,3 +32,8 @@ gem 'devise'
 # group :development, :test do
 #   gem 'webrat'
 # end
+
+group :development, :test do
+  gem "factory_girl_rails" #, "~> 1.2"
+  gem 'factory_girl'
+end

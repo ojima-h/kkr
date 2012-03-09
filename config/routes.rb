@@ -1,7 +1,9 @@
 Kkr::Application.routes.draw do
-  devise_for :users
+  resources :filters do
+    resources :manipulations, :only => :destroy
+  end
 
-  resources :restrictions
+  devise_for :users
 
   resources :tags
 

@@ -2,9 +2,14 @@
 
 FactoryGirl.define do
   factory :tag do
-    name "todo"
-    color "red"
+    #name "name"
+    name { FactoryGirl.generate(:tag_name) }
+    color "color"
     # notes []
     # links []
+  end
+
+  sequence :tag_name do |n|
+    "name_#{n}"
   end
 end

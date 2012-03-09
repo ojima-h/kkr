@@ -2,7 +2,11 @@
 
 FactoryGirl.define do
   factory :filter do
+    ignore do
+      sort { "append" }
+    end
+    
     cond "todo"
-    manipulations {[Factory(:manipulation)]}
+    manipulations { [Factory(:manipulation, :sort => sort)] }
   end
 end
