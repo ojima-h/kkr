@@ -31,4 +31,14 @@ FactoryGirl.define do
     object "[0-9]{2}/[0-9]{2}"
     value "&"
   end
+
+  sequence :manipulatoin_sort do |n|
+    ["append", "delete", "modify", "subst", "attach"][n % 5]
+  end
+  sequence :manipulation_object do |n|
+    "tag_name_#{n}"
+  end
+
+  factory :manipulation_seq do
+    
 end

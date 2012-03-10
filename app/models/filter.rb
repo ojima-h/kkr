@@ -1,28 +1,26 @@
 class Filter < ActiveRecord::Base
-  validates :cond, :presence => true
+  require 'validate'
 
+  validates :cond, :presence => true
   has_many :manipulations, :dependent => :destroy
-  
-  def self.validate note_param
-    require 'validate'
-    parser = ValidateParser.new
-    
-    Filter.all.inject([]) {|acc, filter|
-      syntree = parser.parse(filter.cond)
-      if syntree
-        begin
-          if syntree.validate note_param
-            acc << filter
-          else
-            acc
-          end
-        rescue
-          acc
-        end
-      else
-        acc
-      end
-    }
+
+  validate :cond_should_be_right_syntax
+
+  @@parser = ValidateParser.new
+
+  # after_save do
+  #   @syntree = @@parser.parse(cond)
+  # end
+
+  def cond_should_be_right_syntax
+    @syntree = @@parser.parse(cond)
+    if not @syntree
+      errors.add(:cond, @@parser.failure_reason)
+    end
+  end
+
+  def validate note_param
+    @syntree.validate note_param
   end
 
   def update_manipulations params
@@ -47,6 +45,8 @@ class Filter < ActiveRecord::Base
           manipulation.save and result
         end
       }
+    else
+      true
     end
   end
 end

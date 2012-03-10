@@ -2,7 +2,6 @@ require 'test_helper'
 
 class FiltersControllerTest < ActionController::TestCase
   setup do
-    #@filter = filters(:one)
     @filter = create(:filter)
   end
 
@@ -18,6 +17,14 @@ class FiltersControllerTest < ActionController::TestCase
   end
 
   test "should create filter" do
+    assert_difference('Filter.count') do
+      post :create, filter: @filter.attributes
+    end
+    
+    assert_redirected_to filter_path(assigns(:filter))
+  end
+
+  test "should create filter with manipulations" do
     assert_difference('Filter.count') do
       post :create, filter: @filter.attributes
     end
